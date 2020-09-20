@@ -3,7 +3,7 @@ import discord
 from discord.ext import tasks, commands
 from discord.utils import get
 
-TOKEN = 'NzIyMjAxNDY1MTgzMjczMDQy.Xufo9Q.bPKsAuZJRG7IlhPDAJNit35UxKk'
+TOKEN = ''
 
 client = commands.Bot(command_prefix = '.')
 client.remove_command('help')
