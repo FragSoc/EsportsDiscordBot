@@ -12,16 +12,34 @@ created_vc_channels = []
 
 # Open JSON file and retrieve dictionary or create it
 try:
+    with open('defaultRoles.json', 'r') as fp:
+        defaultRoles = json.load(fp)
+except:
+    defaultRoles = {}
+try:
     with open('savedVMs.json', 'r') as fp:
         voiceMaster = json.load(fp)
 except:
     voiceMaster = {}
 print(voiceMaster)
+print(defaultRoles)
+
 
 @client.event
 async def on_ready():
     print('Bot is now active')
     await client.change_presence(status=discord.Status.dnd, activity=discord.Activity(type=discord.ActivityType.listening, name="your commands"))
+
+
+@client.event
+async def on_member_join(member):
+    try:
+        defaultRoleId = defaultRoles[str(member.guild.id)]
+        role = discord.utils.get(member.guild.roles, id = int(defaultRoleId))
+        await member.add_roles(role)
+    except:
+        print("No default role set")
+
 
 def sendLoggingMessage(guild_id):
     loggingChannelID = voiceMaster.get(guild_id).get('loggingChannel')
@@ -76,6 +94,7 @@ async def help(ctx):
         color=0xFCAF17
     )
     embed.set_author(name='Help')
+    embed.add_field(name='__**.setDefaultRole**__', value="Sets the default role to the @'ed role", inline=False)
     embed.add_field(name='__**.setLog**__', value="Sets the log channel for the server from the given channe ID", inline=False)
     embed.add_field(name='__**.addVM**__', value="When given a channel ID makes it a VoiceMaster master channel", inline=False)
     embed.add_field(name='__**.removeVM**__', value="Removes the given master channel ID from VoiceMaster", inline=False)
@@ -183,6 +202,14 @@ async def setLog(ctx, givenChannelId):
             print("No logging channel set up yet")
     except:
         await ctx.channel.send(f"{ctx.author.mention}, a text channel does not exist with that ID")
+
+
+@client.command()
+@commands.has_permissions(manage_messages=True)
+async def setDefaultRole(ctx, defaultRole):
+    defaultRoles.update({str(ctx.guild.id) : str(defaultRole[3:21])})
+    with open('defaultRoles.json', 'w') as fp:
+        json.dump(defaultRoles, fp)
 
 #############################################################################################################################################################
 # General admin commands stolen from old bot
