@@ -64,7 +64,7 @@ async def on_voice_state_update(member, before, after):
                 created_vc_channels.append(newChannel.id)
                 await member.move_to(newChannel)
                 try:
-                    await sendLoggingMessage(joinedChannelGuildID).send(f"{member.mention} has created a temp VM")
+                    await sendLoggingMessage(joinedChannelGuildID).send(f"{member.mention} has created a temp VM in {after.channel.category.name}")
                 except:
                     print("No logging channel set up yet")
         except:
@@ -77,7 +77,7 @@ async def on_voice_state_update(member, before, after):
             if  (before.channel.members == []):
                 await before.channel.delete()
                 try:
-                    await sendLoggingMessage(str(before.channel.guild.id)).send(f"Temp VC has been deleted")
+                    await sendLoggingMessage(str(before.channel.guild.id)).send(f"{before.channel.name} VC has been deleted")
                 except:
                     print("No logging channel set up yet")
         else:
@@ -108,7 +108,7 @@ async def help(ctx):
     except:
         print("No logging channel set up yet")
 
-@client.command()
+@client.command(aliases=['addvm'])
 @commands.has_permissions(manage_messages=True)
 async def addVM(ctx, givenVCId):
     try:
@@ -131,7 +131,7 @@ async def addVM(ctx, givenVCId):
         await ctx.channel.send(f"{ctx.author.mention}, are you sure that's the correct ID?")
 
 
-@client.command()
+@client.command(aliases=['removevm'])
 @commands.has_permissions(manage_messages=True)
 async def removeVM(ctx, givenVCId):
     try:
@@ -148,7 +148,7 @@ async def removeVM(ctx, givenVCId):
         await ctx.channel.send(f"{ctx.author.mention}, a VC does not exist with that ID")
 
 
-@client.command()
+@client.command(aliases=['listvms', 'listvm'])
 @commands.has_permissions(manage_messages=True)
 async def listVMs(ctx):
     try:
@@ -156,7 +156,7 @@ async def listVMs(ctx):
         for ChannelID, CatID in voiceMaster[str(ctx.author.guild.id)].items():
             if ChannelID != "loggingChannel":
                 vmChannels += "\n"
-                vmChannels += (f"'{client.get_channel(int(ChannelID)).name}' in the '{client.get_channel(int(CatID)).name}' category")
+                vmChannels += (f"'{client.get_channel(int(ChannelID)).name}' in the '{client.get_channel(int(CatID)).name}' category ({client.get_channel(int(ChannelID)).id})")
             else:
                 vmChannels += "\n**Logging channel**\n"
                 vmChannels += (f"'{client.get_channel(int(CatID)).name}' in the '{client.get_channel(client.get_channel(int(CatID)).category_id).name}' category")
@@ -166,7 +166,7 @@ async def listVMs(ctx):
         print("Error")
 
 
-@client.command()
+@client.command(aliases=['clearvms'])
 @commands.has_permissions(manage_messages=True)
 async def clearVMs(ctx):
     try:
@@ -183,7 +183,7 @@ async def clearVMs(ctx):
         print("Error")
 
 
-@client.command()
+@client.command(aliases=['setlog'])
 @commands.has_permissions(manage_messages=True)
 async def setLog(ctx, givenChannelId):
     try:
@@ -204,7 +204,7 @@ async def setLog(ctx, givenChannelId):
         await ctx.channel.send(f"{ctx.author.mention}, a text channel does not exist with that ID")
 
 
-@client.command()
+@client.command(aliases=['setdefaultrole'])
 @commands.has_permissions(manage_messages=True)
 async def setDefaultRole(ctx, defaultRole):
     defaultRoles.update({str(ctx.guild.id) : str(defaultRole[3:21])})
@@ -219,7 +219,7 @@ async def setDefaultRole(ctx, defaultRole):
 async def clear(ctx, amount=5):
     await ctx.channel.purge(limit=int(amount)+1)
     try:
-        await sendLoggingMessage(str(ctx.author.guild.id)).send(f'**{ctx.message.author.name}** issued a **.clear** command for {amount} message(s) in {ctx.message.channel.mention}')
+        await sendLoggingMessage(str(ctx.author.guild.id)).send(f'**{ctx.message.author.mention}** issued a **.clear** command for {amount} message(s) in {ctx.message.channel.mention}')
     except:
         print("No logging channel set up yet")
 
@@ -237,7 +237,7 @@ async def members(ctx):
             memberCount -= 1
     await ctx.send(f"{memberCount} members: {memberList}")
     try:
-        await sendLoggingMessage(str(ctx.author.guild.id)).send(f'**{ctx.message.author.name}** issued a **.members** command in {ctx.message.channel.mention}')
+        await sendLoggingMessage(str(ctx.author.guild.id)).send(f'**{ctx.message.author.mention}** issued a **.members** command in {ctx.message.channel.mention}')
     except:
         print("No logging channel set up yet")
 
