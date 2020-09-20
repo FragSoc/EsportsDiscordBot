@@ -52,7 +52,7 @@ async def on_voice_state_update(member, before, after):
         except:
             print(f"{member.display_name} moved to not a VM channel")
 
-    else:
+    if before.channel != None::
         # They have just left a channel
         if (before.channel.id in created_vc_channels):
             print(f"{member.display_name} was in a VM channel")
